@@ -97,4 +97,3 @@ kubectl port-forward svc/argocd-server -n gitops-system 8080:443
 
 ---
 
-**Удачи в тестировании!**
