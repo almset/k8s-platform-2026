@@ -100,9 +100,9 @@ ansible-playbook playbooks/bootstrap.yml
 
 ```text
 k8s-platform/
-├── 01_bootstrap/          # Ansible для установки GitOps-движка
-├── 02_gitops/             # Декларативное состояние платформы
-├── 03_api/                # Crossplane XRD/Composition для разработчиков
+├── bootstrap/          # Ansible для установки GitOps-движка
+├── gitops/             # Декларативное состояние платформы
+├── api/                # Crossplane XRD/Composition для разработчиков
 ├── docs/               # Документация и ADR
 └── examples/           # Примеры использования Platform API
 ```
