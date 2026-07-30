@@ -1,15 +1,10 @@
-Абсолютно согласен. Это более прагматичный и разумный подход для демонстрации навыков и домашней лаборатории. Monorepo с логическим разделением дает все преимущества архитектуры без операционной сложности управления тремя репозиториями.
 
-Ниже представлен **финальный monorepo** со всеми файлами, готовыми к копированию и тестированию.
-
----
-
-# 📁 Финальная структура monorepo
+# 📁 Структура monorepo
 
 ```text
 k8s-platform/
 ├── README.md
-├── bootstrap/
+├── 01_bootstrap/
 │   ├── ansible.cfg
 │   ├── requirements.yml
 │   ├── inventory/production/
@@ -21,7 +16,7 @@ k8s-platform/
 │       ├── tasks/main.yml
 │       ├── tasks/argocd.yml
 │       └── tasks/flux.yml
-├── gitops/
+├── 02_gitops/
 │   ├── .github/workflows/gitops-pr-checks.yaml
 │   ├── .github/policies/registry.rego
 │   ├── bootstrap/root/appset-components.yaml
@@ -35,7 +30,7 @@ k8s-platform/
 │   │   │   └── Chart.yaml
 │   │   └── kyverno/policies/network/enforce-gateway-api.yaml
 │   └── clusters/prod-eu/cluster.yaml
-├── api/
+├── 03_api/
 │   ├── crds/xwebapplication.yaml
 │   └── compositions/webapp/function-pipeline.yaml
 ├── docs/
