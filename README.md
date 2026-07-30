@@ -1,4 +1,3 @@
-
 # Kubernetes Platform Engineering Blueprint
 
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.29+-blue?logo=kubernetes)](https://kubernetes.io/)
@@ -24,20 +23,20 @@
 
 ## 🏗 Архитектура
 
-Платформа **логически разделена на три независимые области ответственности** (bootstrap, gitops и api). В данном проекте они объединены в один monorepo для упрощения разработки, сопровождения и демонстрации архитектуры.
+Платформа **логически разделена на три независимые области ответственности**. В данном проекте они объединены в один monorepo с явной нумерацией для упрощения разработки, сопровождения и демонстрации архитектуры.
 
 ```mermaid
 graph TD
-    subgraph "1. bootstrap/ (Infra)"
+    subgraph "1. 01-bootstrap/ (Infra)"
         A[Ansible] -->|Устанавливает| B[GitOps Engine: ArgoCD/Flux]
     end
 
-    subgraph "2. gitops/ (State)"
+    subgraph "2. 02-gitops/ (State)"
         B -->|Синхронизирует| C[Cilium, Observability, Kyverno]
         C --> D[Kubernetes Cluster]
     end
 
-    subgraph "3. api/ (DevEx)"
+    subgraph "3. 03-api/ (DevEx)"
         E[Developer] -->|Создает| F[XWebApplication CRD]
         F --> G[Crossplane Composition]
         G --> D
@@ -67,13 +66,13 @@ graph TD
 
 ### 1. Подготовка
 ```bash
-cd bootstrap
+cd 01-bootstrap
 pip install ansible kubernetes
 ansible-galaxy collection install -r requirements.yml
 ```
 
 ### 2. Настройка inventory
-Отредактируйте `bootstrap/inventory/production/hosts.ini` и `bootstrap/inventory/production/group_vars/all.yml`:
+Отредактируйте `01-bootstrap/inventory/production/hosts.ini` и `01-bootstrap/inventory/production/group_vars/all.yml`:
 ```yaml
 kubernetes:
   kubeconfig: ~/.kube/config
@@ -84,7 +83,7 @@ gitops:
   namespace: gitops-system
   repo_url: "https://github.com/your-org/k8s-platform.git"
   revision: "main"
-  path: "gitops/bootstrap/root"
+  path: "02-gitops/bootstrap/root"
 ```
 
 ### 3. Запуск bootstrap
@@ -92,7 +91,7 @@ gitops:
 ansible-playbook playbooks/bootstrap.yml
 ```
 
-**Готово!** ArgoCD установлен и автоматически синхронизирует компоненты из `gitops/`.
+**Готово!** ArgoCD установлен и автоматически синхронизирует компоненты из `02-gitops/`.
 
 ---
 
@@ -100,23 +99,23 @@ ansible-playbook playbooks/bootstrap.yml
 
 ```text
 k8s-platform/
-├── bootstrap/          # Ansible для установки GitOps-движка
-├── gitops/             # Декларативное состояние платформы
-├── api/                # Crossplane XRD/Composition для разработчиков
-├── docs/               # Документация и ADR
-└── examples/           # Примеры использования Platform API
+├── 01-bootstrap/          # Шаг 1: Ansible для установки GitOps-движка
+├── 02-gitops/             # Шаг 2: Декларативное состояние платформы
+├── 03-api/                # Шаг 3: Crossplane XRD/Composition для разработчиков
+├── docs/                  # Документация и ADR
+└── examples/              # Примеры использования Platform API
 ```
 
-### `bootstrap/`
-Ansible-код для первоначального развертывания кластера и установки GitOps-движка.
+### `01-bootstrap/`
+**Шаг 1**: Ansible-код для первоначального развертывания кластера и установки GitOps-движка.
 - **Драйверная модель**: поддержка ArgoCD, Flux, Fleet через `include_tasks`
 - **Идемпотентность**: безопасные повторные запуски
 - **OCI-first**: предпочтительная загрузка Helm-чартов из OCI-реестров
 
 **Подробности**: [docs/bootstrap.md](docs/bootstrap.md)
 
-### `gitops/`
-Декларативное состояние платформы, управляемое ArgoCD/Flux.
+### `02-gitops/`
+**Шаг 2**: Декларативное состояние платформы, управляемое ArgoCD/Flux.
 - **Компоненты**: Cilium, Observability (OTel + Prometheus + Pyroscope), Kyverno
 - **Git Generator**: ApplicationSet автоматически находит все компоненты
 - **Multi-cluster**: разделение `components/` и `clusters/`
@@ -124,8 +123,8 @@ Ansible-код для первоначального развертывания 
 
 **Подробности**: [docs/gitops.md](docs/gitops.md)
 
-### `api/`
-Интерфейс для разработчиков на базе Crossplane.
+### `03-api/`
+**Шаг 3**: Интерфейс для разработчиков на базе Crossplane.
 - **XRD**: абстракции высокого уровня (например, `XWebApplication`)
 - **Composition Functions**: декларативная генерация ресурсов
 - **Без Go-кода**: 95% сценариев покрываются Composition Functions
@@ -157,7 +156,7 @@ spec:
 
 ## 🛡️ Security & Compliance
 
-Каждый Pull Request в `gitops/` проходит автоматическую проверку:
+Каждый Pull Request в `02-gitops/` проходит автоматическую проверку:
 
 1. **Syft** — генерация SBOM (SPDX format)
 2. **Grype** — сканирование уязвимостей в SBOM
@@ -234,9 +233,9 @@ MIT License. См. [LICENSE](LICENSE).
 
 ---
 
-# 📂 Все файлы проекта (готовые к копированию)
+# 📂 Все файлы проекта с обновленными путями
 
-## `bootstrap/ansible.cfg`
+## `01-bootstrap/ansible.cfg`
 ```ini
 [defaults]
 inventory = inventory/production/hosts.ini
@@ -254,7 +253,7 @@ become = true
 become_method = sudo
 ```
 
-## `bootstrap/requirements.yml`
+## `01-bootstrap/requirements.yml`
 ```yaml
 ---
 collections:
@@ -264,7 +263,7 @@ collections:
     version: ">=8.0.0"
 ```
 
-## `bootstrap/inventory/production/hosts.ini`
+## `01-bootstrap/inventory/production/hosts.ini`
 ```ini
 [k8s_control_plane]
 k8s-master-01 ansible_host=192.168.1.10
@@ -282,7 +281,7 @@ ansible_user=ubuntu
 ansible_ssh_private_key_file=~/.ssh/id_rsa
 ```
 
-## `bootstrap/inventory/production/group_vars/all.yml`
+## `01-bootstrap/inventory/production/group_vars/all.yml`
 ```yaml
 ---
 kubernetes:
@@ -294,10 +293,10 @@ gitops:
   namespace: gitops-system
   repo_url: "https://github.com/your-org/k8s-platform.git"
   revision: "main"
-  path: "gitops/bootstrap/root"
+  path: "02-gitops/bootstrap/root"
 ```
 
-## `bootstrap/playbooks/bootstrap.yml`
+## `01-bootstrap/playbooks/bootstrap.yml`
 ```yaml
 ---
 - name: Bootstrap GitOps Engine
@@ -320,14 +319,14 @@ gitops:
     - role: platform/gitops_engine
 ```
 
-## `bootstrap/roles/platform/gitops_engine/tasks/main.yml`
+## `01-bootstrap/roles/platform/gitops_engine/tasks/main.yml`
 ```yaml
 ---
 - name: Include specific GitOps engine driver tasks
   ansible.builtin.include_tasks: "{{ gitops.engine }}.yml"
 ```
 
-## `bootstrap/roles/platform/gitops_engine/tasks/argocd.yml`
+## `01-bootstrap/roles/platform/gitops_engine/tasks/argocd.yml`
 ```yaml
 ---
 - name: Install ArgoCD via Helm (OCI Preferred)
@@ -374,12 +373,12 @@ gitops:
   when: bootstrap_app_info.resources | length == 0
 ```
 
-## `gitops/.github/workflows/gitops-pr-checks.yaml`
+## `02-gitops/.github/workflows/gitops-pr-checks.yaml`
 ```yaml
 name: GitOps Supply Chain & Policy Gate
 on:
   pull_request:
-    paths: ['gitops/components/**', 'gitops/clusters/**']
+    paths: ['02-gitops/components/**', '02-gitops/clusters/**']
 
 jobs:
   validate:
@@ -390,7 +389,7 @@ jobs:
       - name: Generate SBOM (Syft)
         uses: anchore/sbom-action@v0
         with:
-          path: ./gitops/components
+          path: ./02-gitops/components
           format: spdx-json
           output-file: sbom.json
 
@@ -405,16 +404,16 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'config'
-          scan-ref: './gitops'
+          scan-ref: './02-gitops'
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
 
       - name: Evaluate Organizational Policies (Conftest / OPA)
         run: |
-          conftest test gitops/components/ --policy gitops/.github/policies/ --all-namespaces
+          conftest test 02-gitops/components/ --policy 02-gitops/.github/policies/ --all-namespaces
 ```
 
-## `gitops/.github/policies/registry.rego`
+## `02-gitops/.github/policies/registry.rego`
 ```rego
 package main
 
@@ -426,7 +425,7 @@ deny[msg] {
 }
 ```
 
-## `gitops/bootstrap/root/appset-components.yaml`
+## `02-gitops/bootstrap/root/appset-components.yaml`
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -439,7 +438,7 @@ spec:
         repoURL: https://github.com/your-org/k8s-platform.git
         revision: HEAD
         directories:
-          - path: gitops/components/*
+          - path: 02-gitops/components/*
   template:
     metadata:
       name: '{{path.basename}}'
@@ -460,7 +459,7 @@ spec:
           - ServerSideApply=true
 ```
 
-## `gitops/components/cilium/Chart.yaml`
+## `02-gitops/components/cilium/Chart.yaml`
 ```yaml
 apiVersion: v2
 name: cilium-platform
@@ -471,7 +470,7 @@ dependencies:
     repository: "oci://ghcr.io/cilium/charts"
 ```
 
-## `gitops/components/cilium/values.yaml`
+## `02-gitops/components/cilium/values.yaml`
 ```yaml
 kubeProxyReplacement: true
 gatewayAPI:
@@ -486,7 +485,7 @@ hubble:
     enabled: true
 ```
 
-## `gitops/components/observability-core/Chart.yaml`
+## `02-gitops/components/observability-core/Chart.yaml`
 ```yaml
 apiVersion: v2
 name: platform-observability-core
@@ -509,7 +508,7 @@ dependencies:
     repository: "https://grafana.github.io/helm-charts"
 ```
 
-## `gitops/components/grafana/Chart.yaml`
+## `02-gitops/components/grafana/Chart.yaml`
 ```yaml
 apiVersion: v2
 name: platform-grafana
@@ -520,7 +519,7 @@ dependencies:
     repository: "https://grafana.github.io/helm-charts"
 ```
 
-## `gitops/components/kyverno/policies/network/enforce-gateway-api.yaml`
+## `02-gitops/components/kyverno/policies/network/enforce-gateway-api.yaml`
 ```yaml
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -543,7 +542,7 @@ spec:
         deny: {}
 ```
 
-## `gitops/clusters/prod-eu/cluster.yaml`
+## `02-gitops/clusters/prod-eu/cluster.yaml`
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -567,7 +566,7 @@ stringData:
     }
 ```
 
-## `api/crds/xwebapplication.yaml`
+## `03-api/crds/xwebapplication.yaml`
 ```yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -600,7 +599,7 @@ spec:
     kind: XWebApplication
 ```
 
-## `api/compositions/webapp/function-pipeline.yaml`
+## `03-api/compositions/webapp/function-pipeline.yaml`
 ```yaml
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
@@ -672,17 +671,17 @@ spec:
 
 ---
 
-# 🚀 Инструкция по тестированию
+# 🚀 Инструкция по тестированию с новой структурой
 
 ## Шаг 1: Подготовка кластера
 Убедитесь, что у вас есть работающий кластер Kubernetes (`kubeadm` или `RKE2`).
 
 ## Шаг 2: Настройка inventory
-Отредактируйте `bootstrap/inventory/production/hosts.ini` и `bootstrap/inventory/production/group_vars/all.yml` под ваше окружение.
+Отредактируйте `01-bootstrap/inventory/production/hosts.ini` и `01-bootstrap/inventory/production/group_vars/all.yml` под ваше окружение.
 
 ## Шаг 3: Запуск bootstrap
 ```bash
-cd bootstrap
+cd 01-bootstrap
 pip install ansible kubernetes
 ansible-galaxy collection install -r requirements.yml
 ansible-playbook playbooks/bootstrap.yml
@@ -701,11 +700,17 @@ kubectl port-forward svc/argocd-server -n gitops-system 8080:443
 
 ## Шаг 5: Тестирование Platform API
 ```bash
-kubectl apply -f api/crds/xwebapplication.yaml
-kubectl apply -f api/compositions/webapp/function-pipeline.yaml
+kubectl apply -f 03-api/crds/xwebapplication.yaml
+kubectl apply -f 03-api/compositions/webapp/function-pipeline.yaml
 kubectl apply -f examples/webapp-claim.yaml
 ```
 
 ---
 
-Этот monorepo готов к немедленному использованию. Он демонстрирует все современные практики Platform Engineering 2026 года в удобной для разработки и демонстрации форме.
+**Преимущества нумерации:**
+- ✅ Явный порядок развертывания (сначала bootstrap, потом gitops, потом api)
+- ✅ Визуальная структура в файловом менеджере
+- ✅ Понимание зависимостей между компонентами
+- ✅ Упрощение онбординга новых участников проекта
+
+Этот monorepo готов к немедленному использованию и демонстрирует все современные практики Platform Engineering 2026 года в удобной для разработки и демонстрации форме.
