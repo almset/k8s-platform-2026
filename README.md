@@ -1,5 +1,5 @@
 
-# 🚀 Kubernetes Platform Engineering Blueprint (2026 Gold Standard)
+# Kubernetes Platform Engineering Blueprint (2026 Gold Standard)
 
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.29+-blue?logo=kubernetes)](https://kubernetes.io/)
 [![GitOps](https://img.shields.io/badge/GitOps-ArgoCD%20%7C%20Flux-orange?logo=argo)](https://argoproj.github.io/)
