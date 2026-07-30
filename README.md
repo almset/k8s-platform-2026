@@ -7,7 +7,7 @@
 
 Эталонная архитектура (Blueprint) для построения внутренней платформы разработчиков (Internal Developer Platform, IDP) на базе Kubernetes с использованием лучших практик Platform Engineering 2026 года.
 
-## 🎯 Project Goals
+## Project Goals
 
 ✔ Production-ready  
 ✔ Enterprise-ready  
