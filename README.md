@@ -1,4 +1,3 @@
----
 
 # 🚀 Kubernetes Platform Engineering Blueprint (2026 Gold Standard)
 
