@@ -163,6 +163,41 @@ spec:
   replicas: 3
 ```
 
+# 🚀 Инструкция по тестированию с новой структурой
+
+## Шаг 1: Подготовка кластера
+Убедитесь, что у вас есть работающий кластер Kubernetes (`kubeadm` или `RKE2`).
+
+## Шаг 2: Настройка inventory
+Отредактируйте `01-bootstrap/inventory/production/hosts.ini` и `01-bootstrap/inventory/production/group_vars/all.yml` под ваше окружение.
+
+## Шаг 3: Запуск bootstrap
+```bash
+cd 01-bootstrap
+pip install ansible kubernetes
+ansible-galaxy collection install -r requirements.yml
+ansible-playbook playbooks/bootstrap.yml
+```
+
+## Шаг 4: Валидация
+```bash
+# Получите пароль ArgoCD
+kubectl -n gitops-system get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+# Сделайте port-forward
+kubectl port-forward svc/argocd-server -n gitops-system 8080:443
+
+# Откройте https://localhost:8080
+```
+
+## Шаг 5: Тестирование Platform API
+```bash
+kubectl apply -f 03-api/crds/xwebapplication.yaml
+kubectl apply -f 03-api/compositions/webapp/function-pipeline.yaml
+kubectl apply -f examples/webapp-claim.yaml
+```
+
+
 Разработчик получает работающее приложение **без знания Kubernetes-примитивов**.
 
 ## 🛠️ Технологический стек
