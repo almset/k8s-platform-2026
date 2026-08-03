@@ -4,5 +4,5 @@ version: 1.0.0
 # Управляется отдельно из-за корпоративных требований к SSO, RBAC и жизненному циклу.
 dependencies:
   - name: grafana
-    version: "13.1.1"
+    version: "8.12.0"
     repository: "https://grafana.github.io/helm-charts"
