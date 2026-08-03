@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/your-org/platform-gitops.git
+        repoURL: https://github.com/almset/k8s-platform-2026.git
         revision: HEAD
         directories:
           - path: components/*
@@ -16,7 +16,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/your-org/platform-gitops.git
+        repoURL: https://github.com/almset/k8s-platform-2026.git
         targetRevision: HEAD
         path: '{{path}}'
       destination:
