@@ -9,4 +9,4 @@ dependencies:
   - name: cilium
     version: "1.15.0"
     # repository: "oci://ghcr.io/cilium/charts"
-    repository: "oci://quay.io/cilium/charts/cilium"  
+    repository: "oci://quay.io/cilium/charts"  
