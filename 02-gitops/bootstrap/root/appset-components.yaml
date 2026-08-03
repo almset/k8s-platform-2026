@@ -7,9 +7,9 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/almset/k8s-platform-2026.git
-        revision: HEAD
+        revision: master
         directories:
-          - path: components/*
+          - path: 02-gitops/components/*
   template:
     metadata:
       name: '{{path.basename}}'
@@ -17,7 +17,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/almset/k8s-platform-2026.git
-        targetRevision: HEAD
+        targetRevision: master
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
