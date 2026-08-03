@@ -7,6 +7,6 @@ version: 1.0.0
 # специфичных bare-metal сред, где eBPF недоступен или не одобрен политиками.
 dependencies:
   - name: cilium
-    version: "1.15.0"
+    version: "1.20.0"
     # repository: "oci://ghcr.io/cilium/charts"
-    repository: "oci://quay.io/cilium/charts/cilium"  
+    repository: "oci://quay.io/cilium/charts"  
